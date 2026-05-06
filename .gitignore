@@ -18,3 +18,7 @@ _workspace_prev/
 
 # Logs
 *.log
+
+# Python
+__pycache__/
+*.pyc
