@@ -54,7 +54,7 @@ async function humanizeWithProvider({ provider, apiKey, model, prompt, input }) 
 }
 
 async function humanizeWithOpenAI({ apiKey, model, prompt, input }) {
-  const upstream = await fetch("https://api.openai.com/v1/responses", {
+  const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -62,14 +62,14 @@ async function humanizeWithOpenAI({ apiKey, model, prompt, input }) {
     },
     body: JSON.stringify({
       model,
-      input: [
+      messages: [
         {
           role: "system",
-          content: [{ type: "input_text", text: prompt }],
+          content: prompt,
         },
         {
           role: "user",
-          content: [{ type: "input_text", text: input }],
+          content: input,
         },
       ],
     }),
@@ -81,7 +81,7 @@ async function humanizeWithOpenAI({ apiKey, model, prompt, input }) {
 
 async function humanizeWithGemini({ apiKey, model, prompt, input }) {
   const normalizedModel = model.replace(/^models\//, "");
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+  const endpoint = `https://generativelanguage.googleapis.com/v1/models/${encodeURIComponent(
     normalizedModel,
   )}:generateContent`;
   const upstream = await fetch(`${endpoint}?key=${encodeURIComponent(apiKey)}`, {
@@ -143,20 +143,11 @@ async function parseUpstreamJson(upstream, fallbackMessage) {
 }
 
 function extractOpenAIText(data) {
-  if (typeof data.output_text === "string") {
-    return data.output_text;
+  const choices = data.choices || [];
+  if (choices.length > 0 && choices[0].message?.content) {
+    return choices[0].message.content;
   }
-
-  const chunks = [];
-  for (const item of data.output || []) {
-    for (const content of item.content || []) {
-      if (typeof content.text === "string") {
-        chunks.push(content.text);
-      }
-    }
-  }
-
-  return chunks.join("\n");
+  return "";
 }
 
 function extractGeminiText(data) {
