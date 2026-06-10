@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="한글 텍스트를 붙여 넣고 GPT, Gemini, Claude API 키로 바로 윤문화하는 웹앱"
+    />
+    <title>Humanize KR Web</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="toolbar" aria-label="API 설정">
+        <div class="brand-block">
+          <img
+            class="brand-mark"
+            src="./assets/social-preview.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <p class="eyebrow">Humanize KR</p>
+          <h1>한글 AI 티 제거기</h1>
+        </div>
+        <label class="field provider-field">
+          <span>AI</span>
+          <select id="provider" name="provider">
+            <option value="openai">GPT</option>
+            <option value="gemini">Gemini</option>
+            <option value="claude">Claude</option>
+          </select>
+        </label>
+        <label class="field api-field">
+          <span id="api-key-label">OpenAI API Key</span>
+          <input
+            id="api-key"
+            name="api-key"
+            type="password"
+            autocomplete="off"
+            placeholder="sk-..."
+          />
+        </label>
+        <label class="field model-field">
+          <span>Model</span>
+          <input
+            id="model"
+            name="model"
+            type="text"
+            list="model-options"
+            value="gpt-5.2"
+          />
+          <datalist id="model-options"></datalist>
+        </label>
+      </section>
+
+      <form id="humanize-form" class="workspace">
+        <section class="editor-panel" aria-label="원문 입력">
+          <div class="panel-head">
+            <label for="source-text">원문</label>
+            <output id="source-count">0자</output>
+          </div>
+          <textarea
+            id="source-text"
+            name="source-text"
+            rows="18"
+            maxlength="10000"
+            placeholder="윤문화할 한글 텍스트를 붙여 넣으세요."
+            required
+          ></textarea>
+        </section>
+
+        <aside class="settings-panel" aria-label="윤문 설정">
+          <label class="field">
+            <span>장르</span>
+            <select id="genre" name="genre">
+              <option value="auto">자동</option>
+              <option value="column">칼럼</option>
+              <option value="report">리포트</option>
+              <option value="blog">블로그</option>
+              <option value="formal">공적</option>
+            </select>
+          </label>
+
+          <fieldset>
+            <legend>강도</legend>
+            <label><input type="radio" name="tone" value="보수" /> 보수</label>
+            <label><input type="radio" name="tone" value="기본" checked /> 기본</label>
+            <label><input type="radio" name="tone" value="적극" /> 적극</label>
+          </fieldset>
+
+          <label class="check-row">
+            <input id="remember-key" type="checkbox" />
+            <span>이 브라우저에 API 키 저장</span>
+          </label>
+
+          <button id="submit-button" class="primary-button" type="submit">
+            윤문화
+          </button>
+          <p id="status" class="status" role="status">대기 중</p>
+        </aside>
+
+        <section class="editor-panel result-panel" aria-label="윤문 결과">
+          <div class="panel-head">
+            <label for="result-text">윤문본</label>
+            <div class="actions">
+              <button id="clear-result" type="button">비우기</button>
+              <button id="copy-result" type="button">복사</button>
+            </div>
+          </div>
+          <textarea
+            id="result-text"
+            name="result-text"
+            rows="18"
+            placeholder="윤문화 결과가 여기에 표시됩니다."
+            readonly
+          ></textarea>
+        </section>
+      </form>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
