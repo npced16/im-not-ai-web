@@ -54,14 +54,17 @@ textarea {
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding: 12px;
-  gap: 12px;
+  padding: 16px;
+  gap: 16px;
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .toolbar {
   display: grid;
   grid-template-columns: auto 120px 220px 180px;
-  gap: 12px;
+  gap: 16px;
   align-items: end;
   margin-bottom: 0;
 }
@@ -69,7 +72,21 @@ textarea {
 .brand-block {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 8px;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--surface-strong);
 }
 
 h1 {
@@ -89,7 +106,7 @@ h1 {
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px minmax(0, 1fr);
-  gap: 12px;
+  gap: 16px;
   align-items: stretch;
   flex: 1;
   min-height: 0;
@@ -112,8 +129,8 @@ h1 {
 .settings-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px;
+  gap: 14px;
+  padding: 16px;
 }
 
 .panel-head {

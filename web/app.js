@@ -41,6 +41,14 @@ const rememberKey = document.querySelector("#remember-key");
 
 applyProviderSettings(providerSelect.value);
 
+const themeToggle = document.querySelector("#theme-toggle");
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.style.colorScheme = isDark ? "light" : "dark";
+  });
+}
+
 providerSelect.addEventListener("change", () => {
   applyProviderSettings(providerSelect.value);
   setStatus(`${PROVIDERS[providerSelect.value].name}로 연결 대상을 바꿨습니다.`);
