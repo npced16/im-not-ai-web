@@ -65,34 +65,16 @@ textarea {
 }
 
 .brand-block {
-  display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  gap: 16px;
+  display: flex;
   align-items: center;
-}
-
-.brand-mark {
-  width: 88px;
-  height: 88px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.eyebrow {
-  grid-column: 2;
-  margin: 0 0 4px;
-  color: var(--accent);
-  font-size: 13px;
-  font-weight: 700;
+  gap: 0;
 }
 
 h1 {
-  grid-column: 2;
   margin: 0;
-  font-size: clamp(28px, 4vw, 48px);
-  line-height: 1.05;
-  letter-spacing: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .workspace {
@@ -281,15 +263,6 @@ button:disabled {
     gap: 12px;
   }
 
-  .brand-block {
-    grid-template-columns: 64px minmax(0, 1fr);
-    gap: 12px;
-  }
-
-  .brand-mark {
-    width: 64px;
-    height: 64px;
-  }
 
   .panel-head {
     min-height: 64px;

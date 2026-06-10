@@ -208,10 +208,20 @@ git clone https://github.com/epoko77-ai/im-not-ai.git && cd im-not-ai
 
 Codex에서 `$humanize-korean`으로 발동합니다(또는 `/skills` 메뉴). Codex는 단일 호출 **Fast 모드**만 제공하며, 정밀 strict 5인 파이프라인은 Claude Code 전용입니다. (Codex Desktop용 별도 어댑터로는 community 포트 [`Squirbie/im-not-ai-codex`](https://github.com/Squirbie/im-not-ai-codex)도 있습니다.)
 
-**방법 E — Web UI (비공식)**
+**방법 E — Web UI (공식 웹 버전)**
 
-opencode 로 윤문하는 커뮤니티 제작 포트입니다.
-- 접속: [im-not-ai-ocx.illuwa.click](https://im-not-ai-ocx.illuwa.click/)
+원본 프로젝트 [`im-not-ai`](https://github.com/epoko77-ai/im-not-ai)를 기반으로, 웹 브라우저에서 직접 AI 글을 윤문할 수 있도록 구현한 공식 웹페이지 버전입니다. API 키만 있으면 클릭 몇 번으로 윤문할 수 있습니다.
+
+- **접속**: [im-not-ai-web.vercel.app](https://im-not-ai-web.vercel.app/) (공식, Vercel 호스팅)
+- **사용**: OpenAI / Google Gemini / Anthropic Claude API 키 입력 후 텍스트 붙여넣기 → 윤문 완료
+- **특징**: 
+  - 10,000자 이상 자동 분할 처리 (4,000자 청크)
+  - 상세한 에러 메시지 (API 키 오류, Rate Limit, 할당량 초과 등)
+  - 결과 바로 복사 가능
+  - CLI 설치 불필요 (웹브라우저만 있으면 됨)
+
+**기존 비공식 웹 UI**
+- [im-not-ai-ocx.illuwa.click](https://im-not-ai-ocx.illuwa.click/) (커뮤니티 제작, opencode 기반)
 
 ### 4. 결과 확인
 

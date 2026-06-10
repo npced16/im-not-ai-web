@@ -30,7 +30,6 @@ const providerSelect = document.querySelector("#provider");
 const apiKeyInput = document.querySelector("#api-key");
 const apiKeyLabel = document.querySelector("#api-key-label");
 const modelInput = document.querySelector("#model");
-const modelOptions = document.querySelector("#model-options");
 const sourceText = document.querySelector("#source-text");
 const resultText = document.querySelector("#result-text");
 const sourceCount = document.querySelector("#source-count");
@@ -114,6 +113,12 @@ form.addEventListener("submit", async (event) => {
   resultText.value = "";
 
   try {
+    const textLength = input.length;
+    if (textLength > 10000) {
+      const chunks = Math.ceil(textLength / 4000);
+      setStatus(`📄 긴 텍스트를 감지했습니다 (${textLength.toLocaleString("ko-KR")}자). ${chunks}개 청크로 나누어 처리합니다.`);
+    }
+
     const prompt = buildHumanizePrompt({ genre, tone });
     const output = await humanizeWithProvider({
       providerKey: providerSelect.value,
@@ -124,9 +129,10 @@ form.addEventListener("submit", async (event) => {
     });
 
     resultText.value = output.trim();
-    setStatus("완료했습니다. 윤문본을 바로 복사할 수 있습니다.");
+    setStatus("✅ 완료했습니다. 윤문본을 바로 복사할 수 있습니다.");
   } catch (error) {
-    setStatus(error.message, true);
+    const message = error.details ? `${error.message}\n\n💡 ${error.details}` : error.message;
+    setStatus(message, true);
   } finally {
     setBusy(false);
   }
@@ -154,7 +160,10 @@ async function humanizeWithProvider({ providerKey, apiKey, model, prompt, input 
 async function parseJsonResponse(response, fallbackMessage) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.error?.message || fallbackMessage);
+    const error = new Error(data.error || fallbackMessage);
+    error.details = data.details || "";
+    error.code = data.code || "UNKNOWN_ERROR";
+    throw error;
   }
   return data;
 }
@@ -195,14 +204,16 @@ function applyProviderSettings(providerKey) {
   const provider = PROVIDERS[providerKey];
   apiKeyLabel.textContent = provider.keyLabel;
   apiKeyInput.placeholder = provider.placeholder;
-  modelInput.value = provider.defaultModel;
-  modelOptions.replaceChildren(
+
+  modelInput.replaceChildren(
     ...provider.models.map((model) => {
       const option = document.createElement("option");
       option.value = model;
+      option.textContent = model;
       return option;
     }),
   );
+  modelInput.value = provider.defaultModel;
 
   const savedApiKey = localStorage.getItem(provider.storageKey);
   apiKeyInput.value = savedApiKey || "";
