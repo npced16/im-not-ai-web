@@ -7,7 +7,7 @@
       name="description"
       content="한글 텍스트를 붙여 넣고 GPT, Gemini, Claude API 키로 바로 윤문화하는 웹앱"
     />
-    <title>Humanize KR Web</title>
+    <title>AI 윤문화</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -20,8 +20,7 @@
             alt=""
             aria-hidden="true"
           />
-          <p class="eyebrow">Humanize KR</p>
-          <h1>한글 AI 티 제거기</h1>
+          <h1>AI 윤문화</h1>
         </div>
         <label class="field provider-field">
           <span>AI</span>
@@ -43,14 +42,9 @@
         </label>
         <label class="field model-field">
           <span>Model</span>
-          <input
-            id="model"
-            name="model"
-            type="text"
-            list="model-options"
-            value="gpt-5.2"
-          />
-          <datalist id="model-options"></datalist>
+          <select id="model" name="model">
+            <option value="gpt-5.2">gpt-5.2</option>
+          </select>
         </label>
       </section>
 

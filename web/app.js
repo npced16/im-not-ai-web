@@ -30,7 +30,6 @@ const providerSelect = document.querySelector("#provider");
 const apiKeyInput = document.querySelector("#api-key");
 const apiKeyLabel = document.querySelector("#api-key-label");
 const modelInput = document.querySelector("#model");
-const modelOptions = document.querySelector("#model-options");
 const sourceText = document.querySelector("#source-text");
 const resultText = document.querySelector("#result-text");
 const sourceCount = document.querySelector("#source-count");
@@ -205,14 +204,16 @@ function applyProviderSettings(providerKey) {
   const provider = PROVIDERS[providerKey];
   apiKeyLabel.textContent = provider.keyLabel;
   apiKeyInput.placeholder = provider.placeholder;
-  modelInput.value = provider.defaultModel;
-  modelOptions.replaceChildren(
+
+  modelInput.replaceChildren(
     ...provider.models.map((model) => {
       const option = document.createElement("option");
       option.value = model;
+      option.textContent = model;
       return option;
     }),
   );
+  modelInput.value = provider.defaultModel;
 
   const savedApiKey = localStorage.getItem(provider.storageKey);
   apiKeyInput.value = savedApiKey || "";
