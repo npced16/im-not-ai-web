@@ -49,19 +49,21 @@ textarea {
 }
 
 .app-shell {
-  width: min(1440px, 100%);
-  margin: 0 auto;
-  padding: 24px;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 12px;
+  gap: 12px;
 }
 
 .toolbar {
   display: grid;
-  grid-template-columns:
-    minmax(220px, 1fr) minmax(140px, 180px) minmax(260px, 360px)
-    minmax(180px, 260px);
-  gap: 16px;
+  grid-template-columns: auto 120px 220px 180px;
+  gap: 12px;
   align-items: end;
-  margin-bottom: 18px;
+  margin-bottom: 0;
 }
 
 .brand-block {
@@ -72,16 +74,25 @@ textarea {
 
 h1 {
   margin: 0;
+<<<<<<< HEAD
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.5px;
+=======
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+>>>>>>> db420f8 (Optimize layout to use full screen space)
 }
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 260px minmax(0, 1fr);
+  gap: 12px;
   align-items: stretch;
+  flex: 1;
+  min-height: 0;
 }
 
 .editor-panel,
@@ -94,15 +105,15 @@ h1 {
 
 .editor-panel {
   display: flex;
-  min-height: 560px;
   flex-direction: column;
+  min-height: 0;
 }
 
 .settings-panel {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 18px;
+  gap: 12px;
+  padding: 12px;
 }
 
 .panel-head {
@@ -149,11 +160,11 @@ select {
 
 textarea {
   flex: 1;
-  min-height: 480px;
-  resize: vertical;
+  min-height: 100px;
+  resize: none;
   border: 0;
   border-radius: 0 0 8px 8px;
-  padding: 18px;
+  padding: 16px;
   background: transparent;
   line-height: 1.72;
 }
