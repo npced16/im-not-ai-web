@@ -169,9 +169,7 @@ async function humanizeWithGemini({ apiKey, model, prompt, input }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: prompt }],
-        },
+        system: prompt,
         contents: [
           {
             role: "user",
