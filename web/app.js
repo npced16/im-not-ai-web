@@ -44,7 +44,7 @@ applyProviderSettings(providerSelect.value);
 const themeToggle = document.querySelector("#theme-toggle");
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
-    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.style.colorScheme === "dark";
     document.documentElement.style.colorScheme = isDark ? "light" : "dark";
   });
 }
