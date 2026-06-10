@@ -56,7 +56,9 @@ textarea {
 
 .toolbar {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(280px, 420px) minmax(160px, 220px);
+  grid-template-columns:
+    minmax(220px, 1fr) minmax(140px, 180px) minmax(260px, 360px)
+    minmax(180px, 260px);
   gap: 16px;
   align-items: end;
   margin-bottom: 18px;

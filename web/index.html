@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="한글 텍스트를 붙여 넣고 OpenAI API 키로 바로 윤문화하는 웹앱"
+      content="한글 텍스트를 붙여 넣고 GPT, Gemini, Claude API 키로 바로 윤문화하는 웹앱"
     />
     <title>Humanize KR Web</title>
     <link rel="stylesheet" href="./styles.css" />
@@ -23,8 +23,16 @@
           <p class="eyebrow">Humanize KR</p>
           <h1>한글 AI 티 제거기</h1>
         </div>
+        <label class="field provider-field">
+          <span>AI</span>
+          <select id="provider" name="provider">
+            <option value="openai">GPT</option>
+            <option value="gemini">Gemini</option>
+            <option value="claude">Claude</option>
+          </select>
+        </label>
         <label class="field api-field">
-          <span>OpenAI API Key</span>
+          <span id="api-key-label">OpenAI API Key</span>
           <input
             id="api-key"
             name="api-key"
@@ -35,7 +43,14 @@
         </label>
         <label class="field model-field">
           <span>Model</span>
-          <input id="model" name="model" type="text" value="gpt-5.2" />
+          <input
+            id="model"
+            name="model"
+            type="text"
+            list="model-options"
+            value="gpt-5.2"
+          />
+          <datalist id="model-options"></datalist>
         </label>
       </section>
 

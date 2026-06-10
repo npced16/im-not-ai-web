@@ -1,6 +1,36 @@
+const PROVIDERS = {
+  openai: {
+    name: "GPT",
+    keyLabel: "OpenAI API Key",
+    placeholder: "sk-...",
+    storageKey: "humanize-api-key-openai",
+    defaultModel: "gpt-5.2",
+    models: ["gpt-5.2", "gpt-5.1", "gpt-4.1"],
+  },
+  gemini: {
+    name: "Gemini",
+    keyLabel: "Gemini API Key",
+    placeholder: "AIza...",
+    storageKey: "humanize-api-key-gemini",
+    defaultModel: "gemini-2.5-pro",
+    models: ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash"],
+  },
+  claude: {
+    name: "Claude",
+    keyLabel: "Anthropic API Key",
+    placeholder: "sk-ant-...",
+    storageKey: "humanize-api-key-claude",
+    defaultModel: "claude-opus-4-5",
+    models: ["claude-opus-4-5", "claude-sonnet-4-5", "claude-haiku-4-5"],
+  },
+};
+
 const form = document.querySelector("#humanize-form");
+const providerSelect = document.querySelector("#provider");
 const apiKeyInput = document.querySelector("#api-key");
+const apiKeyLabel = document.querySelector("#api-key-label");
 const modelInput = document.querySelector("#model");
+const modelOptions = document.querySelector("#model-options");
 const sourceText = document.querySelector("#source-text");
 const resultText = document.querySelector("#result-text");
 const sourceCount = document.querySelector("#source-count");
@@ -10,27 +40,29 @@ const copyButton = document.querySelector("#copy-result");
 const clearButton = document.querySelector("#clear-result");
 const rememberKey = document.querySelector("#remember-key");
 
-const savedApiKey = localStorage.getItem("humanize-openai-api-key");
-if (savedApiKey) {
-  apiKeyInput.value = savedApiKey;
-  rememberKey.checked = true;
-}
+applyProviderSettings(providerSelect.value);
+
+providerSelect.addEventListener("change", () => {
+  applyProviderSettings(providerSelect.value);
+  setStatus(`${PROVIDERS[providerSelect.value].name}로 연결 대상을 바꿨습니다.`);
+});
 
 sourceText.addEventListener("input", () => {
   sourceCount.textContent = `${sourceText.value.length.toLocaleString("ko-KR")}자`;
 });
 
 rememberKey.addEventListener("change", () => {
+  const provider = getProvider();
   if (!rememberKey.checked) {
-    localStorage.removeItem("humanize-openai-api-key");
+    localStorage.removeItem(provider.storageKey);
   } else if (apiKeyInput.value.trim()) {
-    localStorage.setItem("humanize-openai-api-key", apiKeyInput.value.trim());
+    localStorage.setItem(provider.storageKey, apiKeyInput.value.trim());
   }
 });
 
 apiKeyInput.addEventListener("input", () => {
   if (rememberKey.checked) {
-    localStorage.setItem("humanize-openai-api-key", apiKeyInput.value.trim());
+    localStorage.setItem(getProvider().storageKey, apiKeyInput.value.trim());
   }
 });
 
@@ -52,14 +84,15 @@ copyButton.addEventListener("click", async () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  const provider = getProvider();
   const apiKey = apiKeyInput.value.trim();
   const input = sourceText.value.trim();
-  const model = modelInput.value.trim() || "gpt-5.2";
+  const model = modelInput.value.trim() || provider.defaultModel;
   const genre = document.querySelector("#genre").value;
   const tone = new FormData(form).get("tone") || "기본";
 
   if (!apiKey) {
-    setStatus("OpenAI API 키를 입력하세요.", true);
+    setStatus(`${provider.keyLabel}를 입력하세요.`, true);
     apiKeyInput.focus();
     return;
   }
@@ -77,47 +110,20 @@ form.addEventListener("submit", async (event) => {
   }
 
   setBusy(true);
-  setStatus("윤문화 중입니다. 긴 글은 조금 걸릴 수 있습니다.");
+  setStatus(`${provider.name} ${model}로 윤문화 중입니다.`);
   resultText.value = "";
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        input: [
-          {
-            role: "system",
-            content: [
-              {
-                type: "input_text",
-                text: buildHumanizePrompt({ genre, tone }),
-              },
-            ],
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "input_text",
-                text: input,
-              },
-            ],
-          },
-        ],
-      }),
+    const prompt = buildHumanizePrompt({ genre, tone });
+    const output = await humanizeWithProvider({
+      providerKey: providerSelect.value,
+      apiKey,
+      model,
+      prompt,
+      input,
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error?.message || "OpenAI API 요청에 실패했습니다.");
-    }
-
-    resultText.value = extractResponseText(data).trim();
+    resultText.value = output.trim();
     setStatus("완료했습니다. 윤문본을 바로 복사할 수 있습니다.");
   } catch (error) {
     setStatus(error.message, true);
@@ -125,6 +131,122 @@ form.addEventListener("submit", async (event) => {
     setBusy(false);
   }
 });
+
+async function humanizeWithProvider({ providerKey, apiKey, model, prompt, input }) {
+  if (providerKey === "openai") {
+    return humanizeWithOpenAI({ apiKey, model, prompt, input });
+  }
+
+  if (providerKey === "gemini") {
+    return humanizeWithGemini({ apiKey, model, prompt, input });
+  }
+
+  if (providerKey === "claude") {
+    return humanizeWithClaude({ apiKey, model, prompt, input });
+  }
+
+  throw new Error("지원하지 않는 AI 제공자입니다.");
+}
+
+async function humanizeWithOpenAI({ apiKey, model, prompt, input }) {
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      input: [
+        {
+          role: "system",
+          content: [
+            {
+              type: "input_text",
+              text: prompt,
+            },
+          ],
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: input,
+            },
+          ],
+        },
+      ],
+    }),
+  });
+
+  const data = await parseJsonResponse(response, "OpenAI API 요청에 실패했습니다.");
+  return extractOpenAIText(data);
+}
+
+async function humanizeWithGemini({ apiKey, model, prompt, input }) {
+  const normalizedModel = model.replace(/^models\//, "");
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+    normalizedModel,
+  )}:generateContent`;
+  const response = await fetch(`${endpoint}?key=${encodeURIComponent(apiKey)}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: prompt }],
+      },
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: input }],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.35,
+      },
+    }),
+  });
+
+  const data = await parseJsonResponse(response, "Gemini API 요청에 실패했습니다.");
+  return extractGeminiText(data);
+}
+
+async function humanizeWithClaude({ apiKey, model, prompt, input }) {
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 4096,
+      system: prompt,
+      messages: [
+        {
+          role: "user",
+          content: input,
+        },
+      ],
+    }),
+  });
+
+  const data = await parseJsonResponse(response, "Claude API 요청에 실패했습니다.");
+  return extractClaudeText(data);
+}
+
+async function parseJsonResponse(response, fallbackMessage) {
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error?.message || fallbackMessage);
+  }
+  return data;
+}
 
 function buildHumanizePrompt({ genre, tone }) {
   return `
@@ -158,7 +280,7 @@ function buildHumanizePrompt({ genre, tone }) {
 `.trim();
 }
 
-function extractResponseText(data) {
+function extractOpenAIText(data) {
   if (typeof data.output_text === "string") {
     return data.output_text;
   }
@@ -173,6 +295,39 @@ function extractResponseText(data) {
   }
 
   return chunks.join("\n");
+}
+
+function extractGeminiText(data) {
+  const parts = data.candidates?.[0]?.content?.parts || [];
+  return parts.map((part) => part.text || "").join("");
+}
+
+function extractClaudeText(data) {
+  return (data.content || [])
+    .map((item) => (item.type === "text" ? item.text : ""))
+    .join("");
+}
+
+function applyProviderSettings(providerKey) {
+  const provider = PROVIDERS[providerKey];
+  apiKeyLabel.textContent = provider.keyLabel;
+  apiKeyInput.placeholder = provider.placeholder;
+  modelInput.value = provider.defaultModel;
+  modelOptions.replaceChildren(
+    ...provider.models.map((model) => {
+      const option = document.createElement("option");
+      option.value = model;
+      return option;
+    }),
+  );
+
+  const savedApiKey = localStorage.getItem(provider.storageKey);
+  apiKeyInput.value = savedApiKey || "";
+  rememberKey.checked = Boolean(savedApiKey);
+}
+
+function getProvider() {
+  return PROVIDERS[providerSelect.value];
 }
 
 function setBusy(isBusy) {
