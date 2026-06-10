@@ -67,21 +67,12 @@ textarea {
 .brand-block {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.brand-mark {
-  width: 56px;
-  height: 56px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  object-fit: cover;
-  flex-shrink: 0;
+  gap: 0;
 }
 
 h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.5px;
 }
@@ -272,14 +263,6 @@ button:disabled {
     gap: 12px;
   }
 
-  .brand-block {
-    gap: 12px;
-  }
-
-  .brand-mark {
-    width: 48px;
-    height: 48px;
-  }
 
   .panel-head {
     min-height: 64px;
